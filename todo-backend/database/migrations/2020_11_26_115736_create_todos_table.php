@@ -20,6 +20,8 @@ class CreateTodosTable extends Migration
             $table->text('description');
             $table->boolean('completed');
             $table->string('priority');
+            $table->foreignId('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

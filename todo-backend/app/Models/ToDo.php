@@ -21,4 +21,8 @@ class ToDo extends Model
         'priority',
         'completed'
     ];
+
+    public function user() {
+        return $this->belongsTo('App\Models\User');
+    }
 }
