@@ -17,7 +17,7 @@ class CreateTodosTable extends Migration
             $table->id();
             $table->timestamps();
             $table->string('title')->nullable(false);
-            $table->text('description');
+            $table->text('description')->nullable(true);
             $table->boolean('completed');
             $table->string('priority');
             $table->foreignId('user_id');
