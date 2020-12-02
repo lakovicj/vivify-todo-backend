@@ -58,14 +58,11 @@ class TodoController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  App\Models\Todo  $todo
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Todo $todo)
     {
-
-        $todo = Todo::where('id', $id)->first();
-        //$this->authorize('view', $todo);
         return response()->json($todo, 200);
     }
 
@@ -73,10 +70,10 @@ class TodoController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  App\Models\Todo  $todo
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Todo $todo)
     {
         if ($request->priority != NULL) {
             $request->merge(array('priority' => strtolower($request->input('priority'))));
@@ -89,7 +86,6 @@ class TodoController extends Controller
             'completed' => ['nullable', 'boolean']
         ]);
 
-        $todo = Todo::where('id', $id)->first();
         $todo->title = $request->title ?? $todo->title;
         $todo->description = $request->description ?? $todo->description;
         $todo->priority = $request->priority ?? $todo->priority;
@@ -102,14 +98,12 @@ class TodoController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  App\Models\Todo  $todo
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Todo $todo)
     {
-        $ret = Todo::where('id', $id)->first();
-        Todo::where('id', $id)->delete();
-
-        return response()->json($ret, 200);
+        $todo->delete();
+        return response()->json($todo, 200);
     }
 }

@@ -34,7 +34,5 @@ Route::group([
 });
 
 Route::group(['middleware' => 'auth:api'], function () {
-    Route::apiResource('todos', 'App\Http\Controllers\API\TodoController')->parameters([
-        'todos' => 'id'
-    ]);
+    Route::apiResource('todos', 'App\Http\Controllers\API\TodoController');
 });
