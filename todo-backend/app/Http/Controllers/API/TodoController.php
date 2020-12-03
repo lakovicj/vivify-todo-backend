@@ -3,19 +3,21 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreTodo;
+use App\Http\Requests\UpdateTodo;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
-use App\Models\Enumerations\Priorities;
 use App\Models\Todo;
-
+use App\Services\TodoService;
 
 class TodoController extends Controller
 {
 
-    public function __construct()
+    protected $todoService;
+
+    public function __construct(TodoService $todoService)
     {
         $this->authorizeResource(Todo::class, 'todo');
+        $this->todoService = $todoService;
     }
 
     /**
@@ -35,23 +37,17 @@ class TodoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreTodo $request)
     {
+        // priority to lower case
         $request->merge(array('priority' => strtolower($request->input('priority'))));
-        $request->validate([
-            'title' => ['required', 'string'],
-            'description' => ['nullable', 'string'],
-            'priority' => ['required', Rule::in(Priorities::$types)],
-            'completed' => ['nullable', 'boolean']
-        ]);
+        // validate request -> returns array with validated elements from request
+        $validated = $request->validated();
+        // push id of authenticated user to the validated array and pass it to service
+        $validated = array_merge($validated, ['user_id' => $request->user()->id]);
+        // creates new todo item and saves it to the DB
+        $todo = $this->todoService->createTodo($validated);
 
-        $todo = new Todo();
-        $todo->title = $request->title;
-        $todo->description = $request->description ?? NULL;
-        $todo->priority = $request->priority;
-        $todo->user_id = $request->user()->id;
-        $todo->completed = $request->completed ?? false;
-        $todo->save();
         return response()->json($todo, 200);
     }
 
@@ -73,25 +69,17 @@ class TodoController extends Controller
      * @param  App\Models\Todo  $todo
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Todo $todo)
+    public function update(UpdateTodo $request, Todo $todo)
     {
+        // priority to lower case
         if ($request->priority != NULL) {
             $request->merge(array('priority' => strtolower($request->input('priority'))));
         }
+        // validate
+        $validated = $request->validated();
+        // pass to service
+        $this->todoService->updateTodo($todo, $validated);
 
-        $request->validate([
-            'title' => ['nullable', 'string'],
-            'description' => ['nullable', 'string'],
-            'priority' => ['nullable', Rule::in(Priorities::$types)],
-            'completed' => ['nullable', 'boolean']
-        ]);
-
-        $todo->title = $request->title ?? $todo->title;
-        $todo->description = $request->description ?? $todo->description;
-        $todo->priority = $request->priority ?? $todo->priority;
-        $todo->user_id = $request->user()->id;
-        $todo->completed = $request->completed ?? $todo->completed;
-        $todo->save();
         return response()->json($todo, 200);
     }
 

@@ -3,17 +3,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\StoreUser;
+use App\Services\UserService;
 
 class AuthController extends Controller
 {
+
+    protected $userService;
         /**
      * Create a new AuthController instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(UserService $userService)
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->userService = $userService;
     }
 
     /**
@@ -30,6 +37,16 @@ class AuthController extends Controller
         }
 
         return $this->respondWithToken($token);
+    }
+
+    public function register(StoreUser $request) {
+        $validated = $request->validated();
+        $newUser = $this->userService->registerUser($validated);
+
+        return response()->json([
+            'message' => 'User successfully registered',
+            'user' => $newUser->only(['email', 'first_name', 'last_name'])
+        ], 201);
     }
 
     /**
