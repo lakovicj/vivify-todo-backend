@@ -32,4 +32,9 @@ class StoreTodo extends FormRequest
             'completed' => ['nullable', 'boolean']
         ];
     }
+
+    public function validationData()
+    {
+        return array_merge($this->all(), array('priority' => strtolower($this->input('priority'))));
+    }
 }

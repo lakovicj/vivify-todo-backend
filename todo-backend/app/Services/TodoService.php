@@ -3,16 +3,17 @@
 namespace App\Services;
 
 use App\Models\Todo;
+use App\Models\User;
 
 class TodoService
 {
 
-    public function createTodo($newTodo) {
+    public function createTodo($newTodo, User $user) {
         $todo = new Todo();
         $todo->title = $newTodo['title'];
         $todo->description = $newTodo['description'] ?? NULL;
         $todo->priority = $newTodo['priority'];
-        $todo->user_id = $newTodo['user_id'];
+        $todo->user_id = $user->id;
         $todo->completed = $newTodo['completed'] ?? false;
         $todo->save();
         return $todo;

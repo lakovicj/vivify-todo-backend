@@ -39,16 +39,12 @@ class TodoController extends Controller
      */
     public function store(StoreTodo $request)
     {
-        // priority to lower case
-        $request->merge(array('priority' => strtolower($request->input('priority'))));
         // validate request -> returns array with validated elements from request
         $validated = $request->validated();
-        // push id of authenticated user to the validated array and pass it to service
-        $validated = array_merge($validated, ['user_id' => $request->user()->id]);
         // creates new todo item and saves it to the DB
-        $todo = $this->todoService->createTodo($validated);
+        $todo = $this->todoService->createTodo($validated, $request->user());
 
-        return response()->json($todo, 200);
+        return response()->json($todo->only('title', 'description', 'completed', 'priority'), 200);
     }
 
     /**
@@ -71,10 +67,6 @@ class TodoController extends Controller
      */
     public function update(UpdateTodo $request, Todo $todo)
     {
-        // priority to lower case
-        if ($request->priority != NULL) {
-            $request->merge(array('priority' => strtolower($request->input('priority'))));
-        }
         // validate
         $validated = $request->validated();
         // pass to service

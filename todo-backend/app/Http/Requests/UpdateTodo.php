@@ -32,4 +32,13 @@ class UpdateTodo extends FormRequest
             'completed' => ['nullable', 'boolean']
         ];
     }
+
+    public function validationData()
+    {
+        if ($this->priority != NULL) {
+            return array_merge($this->all(), array('priority' => strtolower($this->input('priority'))));
+        }
+
+        return $this->all();
+    }
 }
