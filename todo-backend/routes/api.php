@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Routing\AbstractRouteCollection;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,5 +30,10 @@ Route::group([
     Route::post('logout', 'App\Http\Controllers\AuthController@logout');
     Route::post('refresh', 'App\Http\Controllers\AuthController@refresh');
     Route::post('me', 'App\Http\Controllers\AuthController@me');
+    Route::post('register', 'App\Http\Controllers\AuthController@register')->name('register');
 
+});
+
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::apiResource('todos', 'App\Http\Controllers\API\TodoController');
 });
