@@ -27,7 +27,7 @@ class StoreUser extends FormRequest
             'email' => ['required', 'email'],
             'first_name' => ['required', 'string', 'between:2, 40'],
             'last_name' => ['required', 'string', 'between:2, 40'],
-            'password' => ['required', 'string', 'min:5', 'max:30']
+            'password' => ['required', 'string', 'min:5', 'max:40']
         ];
     }
 }
